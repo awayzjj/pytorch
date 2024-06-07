@@ -18,7 +18,7 @@ from torch.testing._internal.common_utils import (
     instantiate_parametrized_tests,
     parametrize,
 )
-from torch.testing._internal.inductor_utils import HAS_CPU, HAS_CUDA
+from torch.testing._internal.inductor_utils import HAS_CPU, HAS_GPU
 from torch.utils._sympy.functions import (
     FloorDiv,
     ModularIndexing,
@@ -359,5 +359,5 @@ instantiate_parametrized_tests(ExprPrinterTests)
 if __name__ == "__main__":
     from torch._inductor.test_case import run_tests
 
-    if HAS_CPU or HAS_CUDA:
+    if HAS_CPU or HAS_GPU:
         run_tests("sympy")
