@@ -20,6 +20,7 @@ __all__ = [
     "ToFloat",
     "FloatPow",
     "PowByNatural",
+    "Identity",
 ]
 
 
@@ -624,6 +625,21 @@ class ToFloat(sympy.Function):
 
         if isinstance(number, sympy.Integer):
             return sympy.Float(int(number))
+
+
+class Identity(sympy.Function):
+    """
+    Prevents expansion and other optimizations
+    """
+
+    def __repr__(self):
+        return f"Identity({self.args[0]})"
+
+    def _eval_is_real(self):
+        return self.args[0].is_real
+
+    def _eval_is_integer(self):
+        return self.args[0].is_integer  # type: ignore[attr-defined]
 
 
 def make_opaque_unary_fn(name):
