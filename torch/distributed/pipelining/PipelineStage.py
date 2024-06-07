@@ -620,6 +620,7 @@ class _PipelineStage(_PipelineStageBase):
         stage_index: int,
         pipe_info: Pipe.PipeInfo,
         device: torch.device,
+        num_chunks: int,
         group: Optional[dist.ProcessGroup] = None,
     ):
         """
@@ -632,7 +633,7 @@ class _PipelineStage(_PipelineStageBase):
             stage_index,
             pipe_info.num_stages,
             device,
-            pipe_info.num_chunks,
+            num_chunks,
             group,
         )
         self.pipe_info = pipe_info
@@ -890,6 +891,7 @@ class PipelineStage(_PipelineStage):
         pipe: Pipe,
         stage_index: int,
         device: torch.device,
+        num_chunks: int,  # To be cleaned
         group: Optional[dist.ProcessGroup] = None,
     ):
         """
@@ -899,7 +901,9 @@ class PipelineStage(_PipelineStage):
         stage_module = pipe.get_stage_module(stage_index)
         # Get my pipe info
         pipe_info = pipe.info()
-        super().__init__(stage_module, stage_index, pipe_info, device, group)
+        super().__init__(
+            stage_module, stage_index, pipe_info, device, num_chunks, group
+        )
 
 
 # Manual PipelineStage functions and definition
