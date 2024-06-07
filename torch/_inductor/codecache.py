@@ -2434,8 +2434,8 @@ class CppPythonBindingsCodeCache(CppCodeCache):
     cache: Dict[str, Callable[[], Union[CDLL, ModuleType]]] = {}
     cache_clear = staticmethod(cache.clear)
     cpp_compile_command_flags = {
-        # kernels have no dependency on libtorch
-        "include_pytorch": False,
+        # exception handling depends on libtorch
+        "include_pytorch": True,
         "shared": True,
     }
     entry_function = "kernel"
@@ -2448,6 +2448,7 @@ class CppPythonBindingsCodeCache(CppCodeCache):
         #include <Python.h>
         #include <sstream>
         #include <cstdlib>
+        #include <torch/csrc/Exceptions.h>
 
         #ifndef _MSC_VER
         #if __cplusplus < 202002L
@@ -2483,6 +2484,7 @@ class CppPythonBindingsCodeCache(CppCodeCache):
                     [[unlikely]] throw std::runtime_error("requires %s args");
                 %s
             } catch(std::exception const& e) {
+                torch::translate_exception_to_python(std::current_exception());
                 PyErr_SetString(PyExc_RuntimeError, e.what());
                 return nullptr;
             } catch(...) {
